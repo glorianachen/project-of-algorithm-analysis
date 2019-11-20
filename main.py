@@ -3,8 +3,18 @@ from os.path import isfile
 from math import sqrt
 import argparse
 import sys
-import math
 import branchandbound
+
+class TSP:
+    def __init__(self, graph):
+        self.graph = graph
+
+    def build_tour(self, instance='Cincinnati', algorithm='BnB', cutoff=60,seed=1):
+        if algorithm == 'BnB':
+            bnb = branchandbound.BranchAndBound(self.graph,cutoff)
+            return bnb.generate_tour()
+        else:
+            return None
 
 def main():
 
@@ -59,13 +69,16 @@ def main():
             if u != v:
                 delta_x = city[u][0] - city[v][0]
                 delta_y = city[u][1] - city[v][1]
-                val = round(math.sqrt(delta_x**2 + delta_y**2))
+                val = round(sqrt(delta_x**2 + delta_y**2))
                 graph.add_edge(u, v, weight= val)
        
     # sending graph to algorithm
     solver = TSP(graph)
     kwargs = vars(args).copy()
-    solver.build_tour(**kwargs)
+    '''
+    Shouldnt we pass results to tour_data?
+    '''
+    final_results=solver.generate(**kwargs)
     
     #Output file name
     if args.algorithm == 'BnB':
@@ -77,41 +90,35 @@ def main():
 
 
 
-    '''' took from others, need to modify in the end
-        # Generating solution file?????? no weight
-        f=open(sol_file, 'w')
-        f.write('{}\n'.format(tour_data[-1][1]))
-        for edge in zip(tour_data[-1][0], tour_data[-1][0][1:]):
-            f.write('{} {} {}\n'.format(edge[0], edge[1], graph[edge[0]][edge[1]]['weight']))
+        #took from others, need to modify in the end
+
+        # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
+         #Generating solution file?????? no weight
+    f=open(sol_file, 'w')
+    f.write('{}\n'.format(final_results[-1][1]))
+    for edge in final_results[-1][:-2]:
+        f.write('{},'.format(edge))
+    f.write(final_results[-1][-2])
 
         # Generating trace file
-        f=open(trace_file, 'w')
-        for entry in tour_data:
-            f.write('{:.2f} {}\n'.format(entry[2], entry[1]))
+    f=open(trace_file, 'w')
+    for entry in final_results:
+        f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
             
-        ????
-        if tour_data:
+''''
+        if final_results:
             opt = opt_tour_lengths[args.instance]
-            rel_err = (tour_data[-1][1] - opt)/opt
+            rel_err = round(abs(final_results[-1][1] - opt)/opt,4)
             print('Relative error is ', rel_err)
-    ''''
+'''
 
 if __name__ == '__main__':
     main()
     
     
-    
-    
-class TSP:
-    def __init__(self, graph):
-        self.graph = graph
 
-    def build_tour(self, instance='Cincinnati', algorithm='BnB', cutoff=1,seed=1):
-        if algorithm == 'BnB':
-            bnb = branchandbound.BranchAndBound(self.graph,cutoff)
-            return bnb.generate_tour()
         
-        ''''
+"""
         elif algorithm == 'MSTApprox':
             approx_1 = MSTApprox.MSTApprox(self.graph,instance,seed,cutoff)
             approx_1.generate_tour()
@@ -121,6 +128,4 @@ class TSP:
         elif algorithm == 'LS2':
             ls_2 = SimulatedAnnealing.SimulatedAnnealing(self.graph,instance,seed,cutoff)
             ls_2.generate_tour()
-        ''''
-        else:
-            return None
+"""

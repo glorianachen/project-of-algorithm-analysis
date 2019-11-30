@@ -4,6 +4,7 @@ from math import sqrt
 import argparse
 import sys
 import branchandbound
+import Opt2Exchange
 
 class TSP:
     def __init__(self, graph):
@@ -13,6 +14,9 @@ class TSP:
         if algorithm == 'BnB':
             bnb = branchandbound.BranchAndBound(self.graph,cutoff)
             return bnb.generate_tour()
+        elif algorithm == 'LS1':
+            ls_1 = Opt2Exchange.Opt2Exchange(instance,seed,cutoff)
+            ls_1.generate_tour()
         else:
             return None
 

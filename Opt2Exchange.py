@@ -37,7 +37,7 @@ class Opt2Exchange:
 
 
     # Calculate the total length of selected routed
-    def getTotalLength(self,route):
+    def getRouteLength(self,route):
         length = 0
         for i in range(len(route)):
             u = route[i]
@@ -62,43 +62,44 @@ class Opt2Exchange:
     # implement 2opt
     def twoOpt(self, trace_file, start_time):
         end_time = start_time + float(self.cutoff)
+        # initialize route
         random.seed(self.seed) 
-        curr_route = random.sample(range(len(self.edges)),len(self.edges)) # initialize route
-        print(curr_route)
+        curr_route = random.sample(range(len(self.edges)),len(self.edges)) 
 
-        flag = 1 #flag for imporved solution
+        flag = 1 # flag for improvement
         local_min = sys.maxsize
         global_min = sys.maxsize
         global_route = []
-        micro = 1.0 / 1000000 
+        mili = 1.0 / 1000
         ofile = open(trace_file, 'w')
-        while end_time - time.time()  > micro:
+        while end_time - time.time()  > mili:
 
-            if(flag == 0):
-                if(local_min < global_min):
+            if flag == 0 : # improvement is done for local min
+                if local_min < global_min:
                     global_min = local_min
                     global_route = curr_route
                 curr_route = random.sample(range(len(self.edges)),len(self.edges))
 
-            local_min = self.getTotalLength(curr_route)
+            local_min = self.getRouteLength(curr_route)
             for u in range(len(curr_route)-1):
                 for v in range(u+1, len(curr_route)):
                     flag = 0
                     new_route = self.exchange2opt(curr_route, u, v)
-                    curr_length = self.getTotalLength(new_route)
+                    curr_length = self.getRouteLength(new_route)
                     if curr_length < local_min:
+                        local_min = curr_length
                         curr_route = new_route
                         flag = 1
                         if curr_length < global_min:
-                            local_min = curr_length
-                            ofile.write(str(time.time()-start_time) + "  ")
+                            timestamp = (time.time()-start_time)*1000
+                            ofile.write(f"{timestamp:.2f}, ") # printed unit is ms
                             ofile.write(str(curr_length)+"\n")
                         break
                 if flag == 1:
                     break
 
         if global_min == sys.maxsize:
-            return curr_route # no improvement on initial route
+            return curr_route 
         else:
             return global_route
 
@@ -110,14 +111,10 @@ class Opt2Exchange:
 
         self.getEdges() 
         route = self.twoOpt(trace_file, start_time)
-        total = self.getTotalLength(route)
+        total = self.getRouteLength(route)
 
         ofile = open(sol_file, 'w')
         ofile.write(str(total) + "\n")
-        for i in range(len(route)):
-            u = route[i]
-            if i == len(route) - 1:
-                v = route[0]
-            else:
-                v = route[i+1]
-            ofile.write(str(u)+ " " + str(v) + " "+ str(int(self.getTotalLength([u, v])/2)) + "\n")
+        for i in range(len(route)-1):
+            ofile.write(str(route[i])+",")
+        ofile.write(str(route[len(route)-1]))

@@ -1,22 +1,29 @@
 import networkx as nx
 from os.path import isfile
 from math import sqrt
+from helpers import *
+import getopt
 import argparse
 import sys
 import branchandbound
 import Opt2Exchange
+import local_search_2
+
 
 class TSP:
     def __init__(self, graph):
         self.graph = graph
 
-    def generate(self, instance='Cincinnati', algorithm='BnB', cutoff=600,seed=1):
+    def generate(self, instance='Cincinnati', algorithm='BnB', cutoff=600, seed=1):
         if algorithm == 'BnB':
             bnb = branchandbound.BranchAndBound(self.graph,cutoff)
             return bnb.generate_tour()
         elif algorithm == 'LS1':
             ls_1 = Opt2Exchange.Opt2Exchange(instance,seed,cutoff)
             return ls_1.generate_tour()
+        elif algorithm == 'LS2':
+            ls_2 = local_search_2.LocalSearch2(self.graph, cutoff, seed)
+            return ls_2.get_results()
         else:
             return None
 
@@ -99,7 +106,7 @@ def main():
     
     #Output file name
     if args.algorithm == 'BnB':
-        final_results=solver.generate(**kwargs)
+        final_results = solver.generate(**kwargs)
         file_name = str(args.instance) + '_' + str(args.algorithm) + '_' + str(args.cutoff)
         sol_file = file_name + '.sol'
         trace_file = file_name + '.trace'
@@ -126,8 +133,7 @@ def main():
     # write into file with format    
     else:
         solver.generate(**kwargs)
-    
-            
+
     if final_results:
         opt = optimal_tour_lengths[args.instance]
         error = round(abs(final_results[-1][1] - opt)/opt,4)

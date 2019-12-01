@@ -4,7 +4,6 @@ import sys
 import math
 import random
 
-
 class Opt2Exchange:
 
     def __init__(self,instance,seed,cutoff=600):
@@ -14,7 +13,7 @@ class Opt2Exchange:
         self.graph = {}
         self.edges = []
 
-    # calculate the edges between any 2 vertices
+    # calculate the length between any 2 vertices
     def getEdges(self):
         file_path = './DATA/'+ self.instance + '.tsp'
 

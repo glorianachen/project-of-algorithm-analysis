@@ -3,7 +3,7 @@ from os.path import isfile
 from math import sqrt
 import argparse
 import sys
-import branchandbound
+# import branchandbound
 import Opt2Exchange
 
 class TSP:
@@ -40,13 +40,13 @@ def main():
 
     # parser
     parser = argparse.ArgumentParser()
-    parser.add_argument('-inst', type=str, dest="instance", default='Champaign', 
+    parser.add_argument('-inst', type=str, dest="instance", default='Cincinnati', 
     help='Input of city name')
     parser.add_argument('-alg', type=str, dest="algorithm", default='LS1', 
     help='Input of chosen algorithm')
-    parser.add_argument('-time', type=int, dest="cutoff", default=10, 
+    parser.add_argument('-time', type=int, dest="cutoff", default=5, 
     help='Input of cutoff time')
-    parser.add_argument('-seed', type=int, dest="seed", default=1, 
+    parser.add_argument('-seed', type=int, dest="seed", default=0, 
     help='Input of random seed')
     args = parser.parse_args()
     

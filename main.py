@@ -10,13 +10,13 @@ class TSP:
     def __init__(self, graph):
         self.graph = graph
 
-    def generate(self, instance='Cincinnati', algorithm='BnB', cutoff=60,seed=1):
+    def generate(self, instance='Cincinnati', algorithm='BnB', cutoff=600,seed=1):
         if algorithm == 'BnB':
             bnb = branchandbound.BranchAndBound(self.graph,cutoff)
             return bnb.generate_tour()
         elif algorithm == 'LS1':
             ls_1 = Opt2Exchange.Opt2Exchange(instance,seed,cutoff)
-            ls_1.generate_tour()
+            return ls_1.generate_tour()
         else:
             return None
 

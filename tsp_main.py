@@ -99,7 +99,9 @@ def main():
     
     #Output file name
     if args.algorithm == 'BnB':
+        # final results form: [[1st],[2nd],[3rd]]. example[[[0, 3, 2, 1, 0], 200, 0.5], [[0, 2, 1, 3, 0], 150, 0.7]]
         final_results=solver.generate(**kwargs)
+        
         file_name = str(args.instance) + '_' + str(args.algorithm) + '_' + str(args.cutoff)
         sol_file = file_name + '.sol'
         trace_file = file_name + '.trace'

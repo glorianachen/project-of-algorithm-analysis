@@ -3,7 +3,7 @@ from os.path import isfile
 from math import sqrt
 import argparse
 import sys
-# import branchandbound
+import branchandbound
 import Opt2Exchange
 
 class TSP:

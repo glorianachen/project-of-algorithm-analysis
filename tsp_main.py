@@ -113,12 +113,12 @@ def main():
         approx_cost, approx_solution, approx_trace = approx.Approx(city, args.cutoff, seed).generate_tour()
         #approx_cost, approx_solution, approx_trace = solver.generate(**kwargs)
 
-        if 'output' not in os.listdir('./'):
-            os.mkdir('./output')
-        with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.trace', 'w') as f:
+        if 'Output' not in os.listdir('./'):
+            os.mkdir('./Output')
+        with open('Output/'+ city_name + "_Approx_" + str(args.cutoff) +'.trace', 'w') as f:
             for (a, b) in approx_trace:
                 f.write('{:.2f}, {}\n'.format(a, b))
-        with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.sol', 'w') as f:
+        with open('Output/'+ city_name + "_Approx_" + str(args.cutoff) +'.sol', 'w') as f:
             f.write('{}\n'.format(approx_cost))
             for vertex in approx_solution[:-1]:
                 f.write(str(vertex) + ',') 

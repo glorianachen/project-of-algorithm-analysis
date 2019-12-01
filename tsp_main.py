@@ -5,6 +5,7 @@ import argparse
 import sys
 import branchandbound
 import Opt2Exchange
+import SimulatedAnnealing
 
 class TSP:
     def __init__(self, graph):

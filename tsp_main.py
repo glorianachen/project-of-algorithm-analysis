@@ -21,7 +21,7 @@ class TSP:
             ls_1 = Opt2Exchange.Opt2Exchange(instance,seed,cutoff)
             return ls_1.generate_tour()
         elif algorithm == 'LS2':
-            ls_2 = SimulatedAnnealing.SimulatedAnnealing(self.graph,instance,seed,cutoff)
+            ls_2 = SimulatedAnnealing.SimulatedAnnealing(instance,seed,cutoff)
             ls_2.generate_tour()
         else:
             return None

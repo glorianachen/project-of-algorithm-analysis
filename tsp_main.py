@@ -6,6 +6,8 @@ import sys
 import branchandbound
 import Opt2Exchange
 import SimulatedAnnealing
+import approx
+import os
 
 class TSP:
     def __init__(self, graph):
@@ -105,7 +107,23 @@ def main():
         for entry in final_results:
             f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
         f.close()
-        
+    
+    elif args.algorithm == 'Approx':
+        seed = 100
+        approx_cost, approx_solution, approx_trace = approx.Approx(city, args.cutoff, seed).generate_tour()
+        #approx_cost, approx_solution, approx_trace = solver.generate(**kwargs)
+
+        if 'output' not in os.listdir('./'):
+            os.mkdir('./output')
+        with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.trace', 'w') as f:
+            for (a, b) in approx_trace:
+                f.write('{:.2f}, {}\n'.format(a, b))
+        with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.sol', 'w') as f:
+            f.write('{}\n'.format(approx_cost))
+            for vertex in approx_solution[:-1]:
+                f.write(str(vertex) + ',') 
+            f.write(str(approx_solution[-1])) 
+    
     # write into file with format    
     else:
         solver.generate(**kwargs)

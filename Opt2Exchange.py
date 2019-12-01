@@ -2,7 +2,6 @@
 import time
 import sys
 import math
-import numpy
 import random
 
 
@@ -106,8 +105,8 @@ class Opt2Exchange:
 
     def generate_tour(self):
         start_time = time.time()
-        sol_file = './Output/' + self.instance + "_LS1_" + str(self.cutoff) + "_" + str(self.seed) + ".sol"
-        trace_file = './Output/' + self.instance + "_LS1_" + str(self.cutoff) + "_" + str(self.seed) + ".trace"
+        sol_file = './output/' + self.instance + "_LS1_" + str(self.cutoff) + "_" + str(self.seed) + ".sol"
+        trace_file = './output/' + self.instance + "_LS1_" + str(self.cutoff) + "_" + str(self.seed) + ".trace"
 
         self.getEdges() 
         route = self.twoOpt(trace_file, start_time)

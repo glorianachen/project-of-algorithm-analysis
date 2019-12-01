@@ -52,6 +52,19 @@ def main():
     
     # translate instance into 'xy coordinate graph', notice the main.py need to be in the mother file of DATA
     citymap = "./DATA/{}.tsp".format(args.instance)
+    
+    ###############  Added by Xueqing
+    # File IO: extract city name from the path form args.instance in order to better use in write file
+    # example:  args.instance = DATA/Atlanta.tsp => city_name = Atlanta
+    sub = args.instance.rfind('/')
+    if sub == -1:
+        city_name = args.instance[:-4]
+    else:
+        city_name = args.instance[(sub+1):-4]
+    print("sub: ", sub)
+    print("city name: ", city_name)
+    ############### Added by Xueqing
+    
     if not isfile(citymap):
         print("File not found. Check the city name!")
         sys.exit()

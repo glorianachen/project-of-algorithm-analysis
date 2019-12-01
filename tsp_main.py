@@ -17,6 +17,9 @@ class TSP:
         elif algorithm == 'LS1':
             ls_1 = Opt2Exchange.Opt2Exchange(instance,seed,cutoff)
             return ls_1.generate_tour()
+        elif algorithm == 'LS2':
+            ls_2 = SimulatedAnnealing.SimulatedAnnealing(self.graph,instance,seed,cutoff)
+            ls_2.generate_tour()
         else:
             return None
 
@@ -142,7 +145,5 @@ if __name__ == '__main__':
         elif algorithm == 'LS1':
             ls_1 = Opt2Search.Opt2Search(self.graph,instance,seed,cutoff)
             ls_1.generate_tour()
-        elif algorithm == 'LS2':
-            ls_2 = SimulatedAnnealing.SimulatedAnnealing(self.graph,instance,seed,cutoff)
-            ls_2.generate_tour()
+
 """

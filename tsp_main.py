@@ -92,9 +92,7 @@ def main():
     # sending graph to algorithm
     solver = TSP(graph)
     kwargs = vars(args).copy()
-    '''
-    Shouldnt we pass results to tour_data?
-    '''
+
 
     
     #Output file name
@@ -105,10 +103,6 @@ def main():
         file_name = str(args.instance) + '_' + str(args.algorithm) + '_' + str(args.cutoff)
         sol_file = file_name + '.sol'
         trace_file = file_name + '.trace'
-
-
-
-            #took from others, need to modify in the end
 
             # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
              #Generating solution file?????? no weight

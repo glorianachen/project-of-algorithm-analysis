@@ -7,7 +7,7 @@ Created on Mon Nov 18 17:43:11 2019
 """
 
 # Class which implements the branch and bound algorithm using the NodeStatus.py file, 
-# we use DFS for out branch and bound implentation, by Bhanu Verma
+# we use DFS for out branch and bound implentation
 import networkx as nx
 import sys
 import numpy as np

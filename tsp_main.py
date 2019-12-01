@@ -26,22 +26,6 @@ class TSP:
 
 def main():
 
-    # Optimal 
-    optimal_tour_lengths = {
-        'SanFrancisco': 810196,
-        'NYC': 1555060,
-        'Roanoke': 655454,
-        'Atlanta': 2003763,
-        'Champaign': 52643,
-        'Cincinnati': 277952,
-        'Philadelphia': 1395981,
-        'UKansasState': 62962,
-        'Toronto': 1176151,
-        'UMissouri': 132709,
-        'Boston': 893536,
-        'Denver': 100431
-    }
-
     # parser
     parser = argparse.ArgumentParser()
     parser.add_argument('-inst', type=str, dest="instance", default='Cincinnati', 
@@ -99,7 +83,7 @@ def main():
 
 
     
-    #Output file name
+    #Output file name for BnB
     if args.algorithm == 'BnB':
         # final results form: [[1st],[2nd],[3rd]]. example[[[0, 3, 2, 1, 0], 200, 0.5], [[0, 2, 1, 3, 0], 150, 0.7]]
         final_results=solver.generate(**kwargs)
@@ -109,7 +93,6 @@ def main():
         trace_file = file_name + '.trace'
 
             # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
-             #Generating solution file?????? no weight
         f=open(sol_file, 'w')
         f.write('{}\n'.format(final_results[-1][1]))
         for edge in final_results[-1][0][:-2]:
@@ -127,11 +110,27 @@ def main():
     else:
         solver.generate(**kwargs)
     
+'''
+    optimal_tour_lengths = {
+        'SanFrancisco': 810196,
+        'NYC': 1555060,
+        'Roanoke': 655454,
+        'Atlanta': 2003763,
+        'Champaign': 52643,
+        'Cincinnati': 277952,
+        'Philadelphia': 1395981,
+        'UKansasState': 62962,
+        'Toronto': 1176151,
+        'UMissouri': 132709,
+        'Boston': 893536,
+        'Denver': 100431
+    }
             
     if final_results:
         opt = optimal_tour_lengths[args.instance]
         error = round(abs(final_results[-1][1] - opt)/opt,4)
         print('Relative error is ', error)
+'''
 
 if __name__ == '__main__':
     main()

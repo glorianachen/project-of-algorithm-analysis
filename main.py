@@ -99,14 +99,18 @@ def main():
              #Generating solution file?????? no weight
         f=open(sol_file, 'w')
         f.write('{}\n'.format(final_results[-1][1]))
-        for edge in final_results[-1][:-2]:
+        for edge in final_results[-1][0][:-2]:
             f.write('{},'.format(edge))
-        f.write(final_results[-1][-2])
+        f.write(final_results[-1][0][-2])
+        f.close()
 
             # Generating trace file
         f=open(trace_file, 'w')
         for entry in final_results:
             f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
+        f.close()
+        
+    # write into file with format    
     else:
         solver.generate(**kwargs)
     

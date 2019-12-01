@@ -1,157 +1,163 @@
 import time
-import random
+import sys
 import math
-from helpers import *
-import graph
-from itertools import permutations
-from random import choice
+import numpy
+import random
 
-'''
-Implement Simulated Annealing for our second local seach algorithm. 
-'''
 
-class LocalSearch2:
-    def __init__(self, graph, timelimit, seed):
-        self.graph = graph
-        self.G = graph.G
-        self.N = len(graph.G)
-        self.start = time.time()
-        self.trace = ""
-        self.timelimit = timelimit
-        self.min_tour = {"tour": [], "weight": float('Inf')}
-        self.seed = seed
-        random.seed(seed)
-        self.Search()
+class SimulatedAnnealing:
 
-    # Return the weight of this current tour
-    def get_tour_weight(self, tour):
-        d = 0
-        if len(tour) == 1:
-            return d
-        for i in range(len(tour)-1):
-            d += self.G[tour[i]][tour[i+1]]
-        return d+self.G[tour[0]][tour[-1]]
+    def __init__(self,graph,instance,seed,limit=600):
+        self.cityname = instance
+        self.random_seed = seed
+        self.cutoff_time = limit
+        self.table = list()
 
-    def get_results(self):
-        sol = self.get_min_tour_printable()
-        # print(sol)
-        # print(self.trace)
-        # return sol, self.trace, self.min_tour
-        output_file = '_LS2' + '_' + str(self.timelimit) + '_' + str(self.seed) + '.sol'
-        tour_file = '_LS2' + '_' + str(self.timelimit) + '_' + str(self.seed) + '.tour'
-        trace_file = '_LS2' + '_' + str(self.timelimit) + '_' + str(self.seed) + '.trace'
-        with open(tour_file, 'w') as f:
-            f.write(sol)
-        with open(trace_file, 'w') as f:
-            f.write(self.trace)
-        with open(output_file, 'w') as f:
-            if len(self.min_tour['tour']):
-                f.write(str(self.min_tour['weight']) + '\n')
-                o = ''
-                for c in self.min_tour['tour']:
-                    o += str(c + 1) + ','
-                f.write(o[:-1] + '\n')
 
-    def isTimeup(self):
-        return (time.time() - self.start) >= self.timelimit
-    
-    # def cost(self, s):
-    #     total = 0
-    #     for ind in range(1, len(s)):
-    #         total += self.G[s[ind-1]][s[ind]]
-    #     return total
-    def tabu_same(self,items):
+    #helper functions
+    #parse input file to store graph in a dictionary
+    #format is G{1:[x1, y1], 2:[x2, y2]...n:[xn,yn]}
+    def parseEdges(self):
+        file_path = './DATA/'+ self.cityname + '.tsp'
+        graph = dict()
+        file = open(file_path, 'r')
+
+        description = ''
+        for i in range(1,6):
+            description = description + file.readline()
+
+        for line in file:
+            nums = line.split()
+            if len(nums)== 1:
+                break
+            else:
+                graph[int(nums[0])] = [float(nums[1]), float(nums[2])]
+        file.close()
+
+        return graph
+
+
+    #create table to record distance between all cities
+    # table = list()
+    def calculateAllDistance(self,G):
+        for i in range(1, len(G)+1):
+            row = list()
+            for j in range(1, len(G)+1):
+                x1 = G[i][0]
+                y1 = G[i][1]
+                x2 = G[j][0]
+                y2 = G[j][1]
+                xd = x1 - x2
+                yd = y1 - y2
+                dis = int(math.sqrt(xd*xd + yd*yd)+0.5)
+                row.append(dis)
+            self.table.append(row)
+
+
+    #Given a route in graph G, calculate the total euclidean distance in route
+    def calculateTotalDistance(self,route,G):
+        dis = 0
+        for i in range(len(route)):
+            u = route[i]
+            if i == len(route)-1:
+                v = route[0]
+            else:
+                v = route[i+1]
+            dis += self.table[u-1][v-1]
+        return dis
+
+
+    def all_same(self,items):
         return all(x == items[0] for x in items)
-    
-    def Search(self):
-        # parameters for SA
-        temperature = len(self.G) * 200
-        end_temperature = 10
-        cooling_rate = 0.95
-        max_num_reheat = 5
-        max_iter_per_temp = 6000
-        curt_num_reheat = 0
-        best_temp = temperature
 
-        # Random initial solution
-        current_route = random.sample(range(self.N), self.N)
-        # make a circle for the curt_route
-        # current_route.append(current_route[0])
-        while curt_num_reheat < max_num_reheat:
-            if self.isTimeup():
-                break 
-            while temperature > end_temperature:
-                if self.isTimeup():
-                    break
-                curt_iter_this_temp = 0
-                while curt_iter_this_temp < max_iter_per_temp:
-                    # print(curt_iter_this_temp)
-                    if self.isTimeup():
-                        break
-                    # 2-opt to generate next new route
-                    # [i,j] = sorted(random.sample(range(len(self.G)),2))
-                    # next_route =  current_route[:i] + current_route[j:j+1] +  current_route[i+1:j] + current_route[i:i+1] + current_route[j+1:]
-                    
-                    # 3-opt to generate next new route
-                    a = random.randint(0, len(current_route) - 2)
-                    b = random.randint(a+1, len(current_route) - 1)
-                    c = random.randint(b+1, len(current_route))
-                    # a, b, c = choice(list( permutations( (a, b, c) ) ) )
-                    next_route = current_route[:a] + current_route[a:b][::-1] + current_route[b:c][::-1] + current_route[c:]
-                    # print(current_route)
-                    # print(next_route)
-                    next_cost = self.get_tour_weight(next_route)
-                    current_cost = self.get_tour_weight(current_route)
-                    diff = next_cost - current_cost
-                    if diff < 0:
-                        current_route = next_route
-                        current_cost = next_cost
-                    else:
-                        if math.exp(-diff/temperature) > random.random():
-                            current_route = next_route
-                            current_cost = next_cost
-                    if current_cost < self.min_tour["weight"]:
-                        # print(current_cost)
-                        self.trace += "{1:4f} {0}\n".format(current_cost, time.time() - self.start)
-                        self.min_tour = {
-                            "tour": current_route,
-                            "weight": current_cost
-                        }
-                        curt_num_reheat = 0
-                        best_temp = temperature
-                    curt_iter_this_temp += 1
-                temperature = temperature * cooling_rate
-            curt_num_reheat += 1
-            temperature = best_temp * 100
-            # print("reheat start!")
-            # print(temperature)
-            current_route = self.min_tour["tour"]
-        
 
-    def get_min_tour_printable(self):
-        tour = self.min_tour['tour']
-        if len(tour) == 0:
-            return "Something Wrong"
-        s = "{0}\n".format(self.get_tour_weight(tour))
-        for i in range(len(tour)-1):
-            r = tour[i], tour[i+1], self.G[tour[i]][tour[i+1]]
-            s += "{0} {1} {2}\n".format(r[0], r[1], r[2])
-        r = tour[-1], tour[0], self.G[tour[0]][tour[-1]]
-        s += "{0} {1} {2}\n".format(r[0], r[1], r[2])
-        return s
+    #simulated annealing
+    def annealing(self,G, output_trace_file, start_time):
+        end_time = int(start_time) + int(self.cutoff_time)
+        random.seed(self.random_seed) #random seed
+        current_route = random.sample(range(1,len(G)+1),len(G)) # initialize arbitrary existing route
+        output = open(output_trace_file, 'w')
 
-    # def generate_tour(self):
-    #     output_file = '_LS2' + '_' + str(time) + '_' + str(self.seed) + '.sol'
-    #     tour_file = '_LS2' + '_' + str(time) + '_' + str(seed) + '.tour'
-    #     trace_file = '_LS2' + '_' + str(time) + '_' + str(seed) + '.trace'
-    #     with open(tour_file, 'w') as f:
-    #         f.write(solution[0])
-    #     with open(trace_file, 'w') as f:
-    #         f.write(solution[1])
-    #     with open(output_file, 'w') as f:
-    #         if len(solution[2]['tour']):
-    #             f.write(str(solution[2]['weight']) + '\n')
-    #             o = ''
-    #             for c in solution[2]['tour']:
-    #                 o += str(c + 1) + ','
-    #             f.write(o[:-1] + '\n')
+        temperature = 1000
+        temperature_min = 0.0001
+        cooling_rate = 0.99
+        best_route = []
+        best_distance = 1000000000000
+        avg_running_time = 0
+        times = 0
+        pre_timestamp = start_time
+        q = list()
+
+        iter = 0
+        eps = 1.0 / 100000
+        while temperature > temperature_min or end_time - time.time()  > eps:
+            #if current route has not been changed for a while, initialize it to an arbitrary route
+            if len(q) == 500 and self.all_same(q):
+                current_route = random.sample(range(1,len(G)+1),len(G)) # initialize arbitrary existing route
+
+            #randomly exchange the order of two cities for new route
+            index = random.sample(range(len(G)), 2)
+            new_route = current_route[:]
+            new_route[index[0]], new_route[index[1]] = new_route[index[1]], new_route[index[0]]
+
+            #compare new distance with current distance
+            current_distance = self.calculateTotalDistance(current_route, G)
+            new_distance = self.calculateTotalDistance(new_route, G)
+            diff = new_distance - current_distance
+            #print current_distance
+
+            #If the new distance, computed after the change, is shorter than the current distance, it is kept.
+            #If the new distance is longer than the current one, it is kept with a certain probability.
+            if diff < 0 or math.exp(-diff/temperature) > random.random():
+                current_distance = new_distance
+                current_route = new_route[:]
+
+            #record the previous 500 current distance in a queue
+            if(len(q) < 500):
+                q.append(current_distance)
+            else:
+                q.pop(0)
+                q.append(current_distance)
+
+            #update improved solution
+            if current_distance < best_distance:
+                best_distance = current_distance
+                best_route = current_route[:]
+                #record improved solution found
+                output.write(str(time.time()-start_time) + "  ")
+                output.write(str(best_distance)+"\n")
+                #calcuate average running time
+                avg_running_time += time.time()-pre_timestamp
+                pre_timestamp = time.time()
+                times += 1
+
+            #update the temperature at every iteration by slowly cooling down
+            temperature = temperature * cooling_rate
+            iter += 1
+        #print "avg running time"
+        #print avg_running_time/times
+        return best_route
+
+
+    def generate_tour(self):
+        output_file = 'Output/' + self.cityname + "_LS2_" + str(self.cutoff_time) + "_" + str(self.random_seed) + ".sol"
+        output_trace_file = 'Output/' + self.cityname + "_LS2_" + str(self.cutoff_time) + "_" + str(self.random_seed) + ".trace"
+
+        start_time = time.time()
+        G = self.parseEdges() #parse input file
+        self.calculateAllDistance(G) #caculate total distance table
+        route = self.annealing(G, output_trace_file, start_time) #run simulated annealing algorithm
+        distance = self.calculateTotalDistance(route, G) #calculate optimal distance
+
+        #write optimal route into ouput file
+        output = open(output_file, 'w')
+        output.write(str(int(distance))+ "\n")
+        for i in range(len(route)):
+            u = route[i]
+            if i == len(route)-1:
+                v = route[0]
+            else:
+                v = route[i+1]
+            edge = [u, v]
+            weight = self.calculateTotalDistance(edge, G)/2
+            output.write(str(u)+ " " + str(v) + " "+ str(int(weight)) + "\n")

@@ -1,0 +1,1 @@
+from local_search_2 import LocalSearch2

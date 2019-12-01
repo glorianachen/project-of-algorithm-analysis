@@ -115,12 +115,10 @@ def main():
         solver.generate(**kwargs)
     
             
-''''
-        if final_results:
-            opt = opt_tour_lengths[args.instance]
-            rel_err = round(abs(final_results[-1][1] - opt)/opt,4)
-            print('Relative error is ', rel_err)
-'''
+    if final_results:
+        opt = optimal_tour_lengths[args.instance]
+        error = round(abs(final_results[-1][1] - opt)/opt,4)
+        print('Relative error is ', error)
 
 if __name__ == '__main__':
     main()

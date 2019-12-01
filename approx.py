@@ -9,7 +9,9 @@ import os
 
 class Approx:
 	def __init__(self, city, timelimit, seed):
-		#print(city)
+		print("in approx.py city:", city)
+		print(len(city))
+
 		# calculate euclidean distance, store in 2D adjacent matrix
 		rows, cols = (len(city), len(city)) 
 		G = [[0 for x in range(cols)] for y in range(rows)]  
@@ -66,6 +68,7 @@ class Approx:
 		    if (time.time() - start) > time_limit:
 		        print("break!!!!")
 		        break
+		
 		print()
 		print("Final:")
 		print(cost)
@@ -137,5 +140,5 @@ class Approx:
 	    cost = cost + self.G[to_node][root_index]
 	    return H, H_Path, int(cost)
 
-	def get_results(self):
+	def generate_tour(self):
 		return self.cost, self.solution, self.trace

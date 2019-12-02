@@ -3,11 +3,12 @@ from os.path import isfile
 from math import sqrt
 import argparse
 import sys
+import os
 import branchandbound
 import Opt2Exchange
 import SimulatedAnnealing
 import approx
-import os
+
 
 class TSP:
     def __init__(self, graph):
@@ -51,8 +52,6 @@ def main():
         city_name = args.instance[:-4]
     else:
         city_name = args.instance[(sub+1):-4]
-    print("sub: ", sub)
-    print("city name: ", city_name)
     ############### Added by Xueqing
     
     if not isfile(citymap):

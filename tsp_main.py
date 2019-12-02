@@ -82,8 +82,23 @@ def main():
     solver = TSP(graph)
     kwargs = vars(args).copy()
 
+    optimal_tour_lengths = {
+        'SanFrancisco': 810196,
+        'NYC': 1555060,
+        'Roanoke': 655454,
+        'Atlanta': 2003763,
+        'Champaign': 52643,
+        'Cincinnati': 277952,
+        'Philadelphia': 1395981,
+        'UKansasState': 62962,
+        'Toronto': 1176151,
+        'UMissouri': 132709,
+        'Boston': 893536,
+        'Denver': 100431,
+        'Berlin': 7542
+    }
+    opt = optimal_tour_lengths[args.instance]
 
-    
     #Output file name for BnB
     if args.algorithm == 'BnB':
         # final results form: [[1st],[2nd],[3rd]]. example[[[0, 3, 2, 1, 0], 200, 0.5], [[0, 2, 1, 3, 0], 150, 0.7]]
@@ -147,31 +162,24 @@ def main():
             f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
         f.close()
 
+        error = round(abs(final_results[-1][1] - opt)/opt,4)
+        end_time = final_results[-1][2]
+        print('Relative error is ', error)
+        print('Finished time is {:.2f}'.format(end_time))
+
     else:
         solver.generate(**kwargs)
     
-'''
-    optimal_tour_lengths = {
-        'SanFrancisco': 810196,
-        'NYC': 1555060,
-        'Roanoke': 655454,
-        'Atlanta': 2003763,
-        'Champaign': 52643,
-        'Cincinnati': 277952,
-        'Philadelphia': 1395981,
-        'UKansasState': 62962,
-        'Toronto': 1176151,
-        'UMissouri': 132709,
-        'Boston': 893536,
-        'Denver': 100431,
-        'Berlin': 7542
-    }
-            
+
+    
+"""            
     if final_results:
-        opt = optimal_tour_lengths[args.instance]
         error = round(abs(final_results[-1][1] - opt)/opt,4)
+        end_time = final_results[-1][2]
         print('Relative error is ', error)
-'''
+        print('Finished time is {:.2f}'.format(end_time))
+"""
+
 
 if __name__ == '__main__':
     main()

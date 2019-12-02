@@ -18,6 +18,7 @@ class SimulatedAnnealing:
         self.time_limit = limit
         self.edges = []
         self.graph = {}
+        self.result = []
 
     # helper functions
     # parse input file to store graph in a dictionary
@@ -59,12 +60,12 @@ class SimulatedAnnealing:
         return length
 
     # Implementation of Simulated Annealing
-    def simulatedAnnealing(self, output_trace_file, start_time):
+    def simulatedAnnealing(self, start_time):
         end_time = int(start_time) + int(self.time_limit)
         random.seed(self.seed)
         # initialize to be an arbitrary existing route
         current_route = random.sample(range(1,len(self.graph)+1),len(self.graph))
-        output = open(output_trace_file, 'w')
+        # output = open(output_trace_file, 'w')
 
         temperature = 1000
         temperature_min = 0.0001
@@ -111,8 +112,9 @@ class SimulatedAnnealing:
             if current_distance < best_distance:
                 best_distance = current_distance
                 best_route = current_route[:]
-                output.write(str(time.time()-start_time) + "  ")
-                output.write(str(best_distance)+"\n")
+                # output.write(str(time.time()-start_time) + "  ")
+                # output.write(str(best_distance)+"\n")
+                self.result.append((best_route, best_distance, (time.time()-start_time)))
                 avg_running_time += time.time()-pre_timestamp
                 pre_timestamp = time.time()
                 times += 1
@@ -123,23 +125,24 @@ class SimulatedAnnealing:
         return best_route
 
     def generate_tour(self):
-        output_file = './output/' + str(self.city) + "_LS2_" + str(self.time_limit) + "_" + str(self.seed) + ".sol"
-        output_trace_file = './output/' + str(self.city) + "_LS2_" + str(self.time_limit) + "_" + str(self.seed) + ".trace"
+        # output_file = './output/' + str(self.city) + "_LS2_" + str(self.time_limit) + "_" + str(self.seed) + ".sol"
+        # output_trace_file = './output/' + str(self.city) + "_LS2_" + str(self.time_limit) + "_" + str(self.seed) + ".trace"
 
         start_time = time.time()
         self.getEdges()
-        route = self.simulatedAnnealing(output_trace_file, start_time)
+        route = self.simulatedAnnealing(start_time)
         length = self.getRouteLength(route)
 
         # write optimal route into an output file
-        output = open(output_file, 'w')
-        output.write(str(int(length))+ "\n")
-        for i in range(len(route)):
-            u = route[i]
-            if i == len(route)-1:
-                v = route[0]
-            else:
-                v = route[i+1]
-            edge = [u, v]
-            weight = self.getRouteLength(edge)/2
-            output.write(str(u) + " " + str(v) + " " + str(int(weight)) + "\n")
+        # output = open(output_file, 'w')
+        # output.write(str(int(length))+ "\n")
+        # for i in range(len(route)):
+        #     u = route[i]
+        #     if i == len(route)-1:
+        #         v = route[0]
+        #     else:
+        #         v = route[i+1]
+        #     edge = [u, v]
+        #     weight = self.getRouteLength(edge)/2
+        #     output.write(str(u) + " " + str(v) + " " + str(int(weight)) + "\n")
+        return self.result

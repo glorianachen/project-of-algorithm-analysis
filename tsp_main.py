@@ -168,7 +168,6 @@ def main():
         sol_file = './output/' + args.instance + "_LS2_" + str(args.cutoff) + "_" + str(args.seed) + ".sol"
         trace_file = './output/' + args.instance + "_LS2_" + str(args.cutoff) + "_" + str(args.seed) + ".trace"
 
-<<<<<<< HEAD
         # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
         f = open(sol_file, 'w')
         f.write('{}\n'.format(final_results[-1][1]))
@@ -182,13 +181,12 @@ def main():
         for entry in final_results:
             f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
         f.close()
-=======
+
         error = round(abs(final_results[-1][1] - opt)/opt,4)
         end_time = final_results[-1][2]
         print('Relative error is ', error)
         print('Finished time is {:.2f}'.format(end_time))
 
->>>>>>> d45cd3627c70e47b64f8bf613f8f391c0432fa0e
     else:
         solver.generate(**kwargs)
     

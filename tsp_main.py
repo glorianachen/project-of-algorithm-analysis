@@ -126,6 +126,28 @@ def main():
             f.write(str(approx_solution[-1])) 
     
     # write into file with format    
+    elif args.algorithm == 'LS1':
+        # final results form: [[1st],[2nd],[3rd]]. example[[[0, 3, 2, 1, 0], 200, 0.5], [[0, 2, 1, 3, 0], 150, 0.7]]
+        final_results=solver.generate(**kwargs)
+        
+        sol_file = './output/' + args.instance + "_LS1_" + str(args.cutoff) + "_" + str(args.seed) + ".sol"
+        trace_file = './output/' + args.instance + "_LS1_" + str(args.cutoff) + "_" + str(args.seed) + ".trace"
+
+            # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
+        f=open(sol_file, 'w')
+        f.write('{}\n'.format(final_results[-1][1]))
+        for edge in final_results[-1][0][:-1]:
+            f.write('{},'.format(edge))
+        f.write(str(final_results[-1][0][-1]))
+        f.close()
+
+            # Generating trace file
+        f=open(trace_file, 'w')
+        for entry in final_results:
+            f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
+            print(entry)
+        f.close()
+    
     else:
         solver.generate(**kwargs)
     

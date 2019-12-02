@@ -13,6 +13,7 @@ class Opt2Exchange:
         self.cutoff = cutoff
         self.graph = graph
         self.edges = []
+        self.results = []
 
     # calculate the length between any 2 vertices
     def getEdges(self):
@@ -50,7 +51,7 @@ class Opt2Exchange:
         return curr
 
     # implement 2opt
-    def twoOpt(self, trace_file, start_time):
+    def twoOpt(self,start_time):
         end_time = start_time + float(self.cutoff)
         # initialize route
         random.seed(self.seed) 
@@ -61,7 +62,7 @@ class Opt2Exchange:
         global_min = sys.maxsize
         global_route = []
         mili = 1.0 / 1000
-        ofile = open(trace_file, 'w')
+        # ofile = open(trace_file, 'w')
         while end_time - time.time()  > mili:
 
             if flag == 0 : # improvement is done for local min
@@ -82,8 +83,7 @@ class Opt2Exchange:
                         flag = 1
                         if curr_length < global_min:
                             timestamp = time.time()-start_time
-                            ofile.write(f"{timestamp:.2f}, ") # printed unit is ms
-                            ofile.write(str(curr_length)+"\n")
+                            self.results.append((curr_route, curr_length, timestamp))
                         break
                 if flag == 1:
                     break
@@ -96,15 +96,8 @@ class Opt2Exchange:
 
     def generate_tour(self):
         start_time = time.time()
-        sol_file = './output/' + self.instance + "_LS1_" + str(self.cutoff) + "_" + str(self.seed) + ".sol"
-        trace_file = './output/' + self.instance + "_LS1_" + str(self.cutoff) + "_" + str(self.seed) + ".trace"
-
         self.getEdges() 
-        route = self.twoOpt(trace_file, start_time)
+        route = self.twoOpt(start_time)
         total = self.getRouteLength(route)
 
-        ofile = open(sol_file, 'w')
-        ofile.write(str(total) + "\n")
-        for i in range(len(route)-1):
-            ofile.write(str(route[i])+",")
-        ofile.write(str(route[len(route)-1]))
+        return self.results

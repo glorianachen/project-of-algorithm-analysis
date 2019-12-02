@@ -145,9 +145,8 @@ def main():
         f=open(trace_file, 'w')
         for entry in final_results:
             f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
-            print(entry)
         f.close()
-    
+
     else:
         solver.generate(**kwargs)
     

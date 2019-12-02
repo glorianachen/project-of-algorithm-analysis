@@ -166,7 +166,8 @@ def main():
         end_time = final_results[-1][2]
         print('Relative error is ', error)
         print('Finished time is {:.2f}'.format(end_time))
-        
+        print("Final solution:", final_results[-1][1])
+
     elif args.algorithm == 'LS2':
         # final results form: [[1st],[2nd],[3rd]]. example[[[0, 3, 2, 1, 0], 200, 0.5], [[0, 2, 1, 3, 0], 150, 0.7]]
         final_results = solver.generate(**kwargs)
@@ -192,6 +193,7 @@ def main():
         end_time = final_results[-1][2]
         print('Relative error is ', error)
         print('Finished time is {:.2f}'.format(end_time))
+        print("Final solution:", final_results[-1][1])
 
     else:
         solver.generate(**kwargs)

@@ -108,7 +108,7 @@ def main():
         f.close()
     
     elif args.algorithm == 'Approx':
-        seed = 100
+        seed = 0
         approx_cost, approx_solution, approx_trace, rel_error = approx.Approx(city, args.cutoff, seed, args.instance).generate_tour()
         #approx_cost, approx_solution, approx_trace = solver.generate(**kwargs)
 

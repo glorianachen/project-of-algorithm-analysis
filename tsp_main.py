@@ -18,7 +18,7 @@ class TSP:
             bnb = branchandbound.BranchAndBound(self.graph,cutoff)
             return bnb.generate_tour()
         elif algorithm == 'LS1':
-            ls_1 = Opt2Exchange.Opt2Exchange(instance,seed,cutoff)
+            ls_1 = Opt2Exchange.Opt2Exchange(self.graph,instance,seed,cutoff)
             return ls_1.generate_tour()
         elif algorithm == 'LS2':
             ls_2 = SimulatedAnnealing.SimulatedAnnealing(instance,seed,cutoff)

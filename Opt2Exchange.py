@@ -1,4 +1,5 @@
 #CSE6140 project LS1 implemented by Xiaoting Lai
+import networkx as nx
 import time
 import sys
 import math
@@ -6,33 +7,24 @@ import random
 
 class Opt2Exchange:
 
-    def __init__(self,instance,seed,cutoff=600):
+    def __init__(self,graph,instance,seed,cutoff=600):
         self.instance = instance
         self.seed = seed
         self.cutoff = cutoff
-        self.graph = {}
+        self.graph = graph
         self.edges = []
 
     # calculate the length between any 2 vertices
     def getEdges(self):
-        file_path = './DATA/'+ self.instance + '.tsp'
-
-        file = open(file_path, 'r')
-        for i in range(0,6):
-            line = file.readline()
-        while line!='EOF\n':
-            nums = line.split()
-            self.graph[int(nums[0])-1] = [float(nums[1]), float(nums[2])]
-            line=file.readline()
-        file.close()
-
-        for i in range(len(self.graph)):
+        for i in range(len(self.graph.node.keys())):
             row = []
-            for j in range(len(self.graph)):
-                length = round(math.sqrt((self.graph[i][0] - self.graph[j][0])**2 + (self.graph[i][1] - self.graph[j][1])**2))
+            for j in range(len(self.graph.node.keys())):
+                if i != j:
+                    length = int(self.graph[i+1][j+1]['weight'])
+                else:
+                    length = 0
                 row.append(length)
             self.edges.append(row)
-
 
     # Calculate the total length of selected routed
     def getRouteLength(self,route):
@@ -89,7 +81,7 @@ class Opt2Exchange:
                         curr_route = new_route
                         flag = 1
                         if curr_length < global_min:
-                            timestamp = (time.time()-start_time)*1000
+                            timestamp = time.time()-start_time
                             ofile.write(f"{timestamp:.2f}, ") # printed unit is ms
                             ofile.write(str(curr_length)+"\n")
                         break

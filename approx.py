@@ -8,20 +8,29 @@ import os
 
 
 class Approx:
-	def __init__(self, city, timelimit, seed):
-		print("in approx.py city:", city)
-		print(len(city))
-
+	def __init__(self, city, timelimit, seed, cityName):
 		# calculate euclidean distance, store in 2D adjacent matrix
 		rows, cols = (len(city), len(city)) 
 		G = [[0 for x in range(cols)] for y in range(rows)]  
 		for key_v, value_v in city.items():
 		    for key_u, value_u in city.items():
 		        G[key_v - 1][key_u - 1] = round(np.linalg.norm(np.array(value_v) - np.array(value_u)))
-		#print("G: ",G)
 
-		# random.seed(int(seed))
-		# np.random.seed(int(seed))
+		optimal_tour_lengths = {
+	        'SanFrancisco': 810196,
+	        'NYC': 1555060,
+	        'Roanoke': 655454,
+	        'Atlanta': 2003763,
+	        'Champaign': 52643,
+	        'Cincinnati': 277952,
+	        'Philadelphia': 1395981,
+	        'UKansasState': 62962,
+	        'Toronto': 1176151,
+	        'UMissouri': 132709,
+	        'Boston': 893536,
+	        'Denver': 100431,
+	        'Berlin': 7542
+    	}
 
 		self.G = G
 		time_limit = timelimit
@@ -35,49 +44,40 @@ class Approx:
 		T_Path = []
 		T = np.full_like(self.G, np.inf)
 		T, T_Path = self.prim(0)
-		print("MST:", T)
-		print("T_Path: ",T_Path)
-		print()
 
 		#Go through each case of selecting a vertex as the root node
 		for i in range(len(city)):
 		    # Step2: traverse the MST in preorder walk
 		    T_walk = []
 		    T_walk = self.preorder_tree_walk(T, i)
-		    print("T_walk: ",T_walk)
 		    
 		    # Step3: get Hamiltonian cycle
 		    H = np.full_like(G, np.inf)
 		    H_Path = []
 		    H, H_Path, cur_cost = self.create_H(T_walk, i)
-		    #print("H:", H)
-		    #print("H_Path:", H_Path)
-		    #print("cur_cost:", cur_cost)
 		    
+		    # Found an improvement, update 
 		    if cur_cost < cost:
 		        cost = cur_cost
 		        trace_time = (time.time() - start)
 		        solution = T_walk 
-		        print("Update")
-		        print("T_walk: ",T_walk)    
-		        print("trace_time: ", trace_time)
-		        print("cost:", cost)
 		        # update trace file information
 		        trace.append((trace_time, cost))
 		        
 		    if (time.time() - start) > time_limit:
-		        print("break!!!!")
+		        print("Timeout break!!!!")
 		        break
-		
-		print()
-		print("Final:")
-		print(cost)
-		print(solution)
-		print(trace)
 
 		self.cost = cost
 		self.solution = solution
-		self.trace = trace   
+		self.trace = trace  
+		self.rel_error = (cost - optimal_tour_lengths[cityName]) / optimal_tour_lengths[cityName]
+
+		print("cityName:", cityName)
+		print("Final:", trace[-1])
+		print("cost:", cost)
+		print("rel_error:", self.rel_error)
+		print()
 
 	# compute MST using Prim
 	def prim(self, root_index):
@@ -141,4 +141,4 @@ class Approx:
 	    return H, H_Path, int(cost)
 
 	def generate_tour(self):
-		return self.cost, self.solution, self.trace
+		return self.cost, self.solution, self.trace, self.rel_error

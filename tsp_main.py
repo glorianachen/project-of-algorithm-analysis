@@ -161,6 +161,12 @@ def main():
         for entry in final_results:
             f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
         f.close()
+
+        error = round(abs(final_results[-1][1] - opt)/opt,4)
+        end_time = final_results[-1][2]
+        print('Relative error is ', error)
+        print('Finished time is {:.2f}'.format(end_time))
+        
     elif args.algorithm == 'LS2':
         # final results form: [[1st],[2nd],[3rd]]. example[[[0, 3, 2, 1, 0], 200, 0.5], [[0, 2, 1, 3, 0], 150, 0.7]]
         final_results = solver.generate(**kwargs)

@@ -110,15 +110,17 @@ def main():
     
     elif args.algorithm == 'Approx':
         seed = 100
-        approx_cost, approx_solution, approx_trace = approx.Approx(city, args.cutoff, seed).generate_tour()
+        approx_cost, approx_solution, approx_trace, rel_error = approx.Approx(city, args.cutoff, seed, args.instance).generate_tour()
         #approx_cost, approx_solution, approx_trace = solver.generate(**kwargs)
 
-        if 'Output' not in os.listdir('./'):
-            os.mkdir('./Output')
-        with open('Output/'+ city_name + "_Approx_" + str(args.cutoff) +'.trace', 'w') as f:
+        if 'output' not in os.listdir('./'):
+            os.mkdir('./output')
+        #with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.trace', 'w') as f:
+        with open('output/'+ args.instance + "_Approx_" + str(args.cutoff) +'.trace', 'w') as f:
             for (a, b) in approx_trace:
                 f.write('{:.2f}, {}\n'.format(a, b))
-        with open('Output/'+ city_name + "_Approx_" + str(args.cutoff) +'.sol', 'w') as f:
+        #with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.sol', 'w') as f:
+        with open('output/'+ args.instance + "_Approx_" + str(args.cutoff) +'.sol', 'w') as f:
             f.write('{}\n'.format(approx_cost))
             for vertex in approx_solution[:-1]:
                 f.write(str(vertex) + ',') 
@@ -141,7 +143,8 @@ def main():
         'Toronto': 1176151,
         'UMissouri': 132709,
         'Boston': 893536,
-        'Denver': 100431
+        'Denver': 100431,
+        'Berlin': 7542
     }
             
     if final_results:

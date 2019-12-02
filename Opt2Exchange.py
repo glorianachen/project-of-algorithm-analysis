@@ -35,7 +35,7 @@ class Opt2Exchange:
                 v = route[0]
             else:
                 v = route[i+1]
-            length += self.edges[u-1][v-1]
+            length += self.edges[u][v]
         return length
 
     # switch the order of index u and v

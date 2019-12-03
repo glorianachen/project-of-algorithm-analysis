@@ -47,7 +47,7 @@ def main():
     else:
         city_name = args.instance[(sub+1):-4]
     
-    if not isfile(citymap):
+    if not isfile(args.instance):
         print("File not found. Check the city name!")
         sys.exit()
     f=open(citymap)

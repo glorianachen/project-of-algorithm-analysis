@@ -50,7 +50,7 @@ def main():
     if not isfile(args.instance):
         print("File not found. Check the city name!")
         sys.exit()
-    f=open(citymap)
+    f=open(args.instance)
     line=f.readline()
     while not 'NODE_COORD_SECTION\n' in line:
       line=f.readline()

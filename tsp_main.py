@@ -106,7 +106,7 @@ def main():
         f.write('{}\n'.format(final_results[-1][1]))
         for edge in final_results[-1][0][:-2]:
             f.write('{},'.format(edge))
-        f.write(final_results[-1][0][-2])
+        f.write(str(final_results[-1][0][-2]))
         f.close()
 
             # Generating trace file

@@ -145,6 +145,8 @@ def main():
         trace_file = './output/' + city_name + "_LS1_" + str(args.cutoff) + "_" + str(args.seed) + ".trace"
 
         # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
+        if 'output' not in os.listdir('./'):
+            os.mkdir('./output')
         f=open(sol_file, 'w')
         f.write('{}\n'.format(final_results[-1][1]))
         for edge in final_results[-1][0][:-1]:
@@ -172,6 +174,8 @@ def main():
         trace_file = './output/' + city_name + "_LS2_" + str(args.cutoff) + "_" + str(args.seed) + ".trace"
 
         # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
+        if 'output' not in os.listdir('./'):
+            os.mkdir('./output')
         f = open(sol_file, 'w')
         f.write('{}\n'.format(final_results[-1][1]))
         for edge in final_results[-1][0][:-1]:

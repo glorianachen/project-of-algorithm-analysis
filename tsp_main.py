@@ -40,24 +40,17 @@ def main():
     parser.add_argument('-seed', type=int, dest="seed", default=0, 
     help='Input of random seed')
     args = parser.parse_args()
-    
-    # translate instance into 'xy coordinate graph', notice the main.py need to be in the mother file of DATA
-    citymap = "./DATA/{}.tsp".format(args.instance)
-    
-    ###############  Added by Xueqing, needed for verifying
-    # File IO: extract city name from the path form args.instance in order to better use in write file
-    # example:  args.instance = DATA/Atlanta.tsp => city_name = Atlanta
+
     sub = args.instance.rfind('/')
     if sub == -1:
         city_name = args.instance[:-4]
     else:
         city_name = args.instance[(sub+1):-4]
-    ############### Added by Xueqing
     
-    if not isfile(citymap):
+    if not isfile(args.instance):
         print("File not found. Check the city name!")
         sys.exit()
-    f=open(citymap)
+    f=open(args.instance)
     line=f.readline()
     while not 'NODE_COORD_SECTION\n' in line:
       line=f.readline()
@@ -97,14 +90,14 @@ def main():
         'Denver': 100431,
         'Berlin': 7542
     }
-    opt = optimal_tour_lengths[args.instance]
+    opt = optimal_tour_lengths[city_name]
 
     #Output file name for BnB
     if args.algorithm == 'BnB':
         # final results form: [[1st],[2nd],[3rd]]. example[[[0, 3, 2, 1, 0], 200, 0.5], [[0, 2, 1, 3, 0], 150, 0.7]]
         final_results=solver.generate(**kwargs)
         
-        file_name = str(args.instance) + '_' + str(args.algorithm) + '_' + str(args.cutoff)
+        file_name = city_name + '_' + str(args.algorithm) + '_' + str(args.cutoff)
         sol_file = file_name + '.sol'
         trace_file = file_name + '.trace'
 
@@ -113,7 +106,7 @@ def main():
         f.write('{}\n'.format(final_results[-1][1]))
         for edge in final_results[-1][0][:-2]:
             f.write('{},'.format(edge))
-        f.write(final_results[-1][0][-2])
+        f.write(str(final_results[-1][0][-2]))
         f.close()
 
             # Generating trace file
@@ -124,17 +117,20 @@ def main():
     
     elif args.algorithm == 'Approx':
         seed = 0
-        approx_cost, approx_solution, approx_trace, rel_error = approx.Approx(city, args.cutoff, seed, args.instance).generate_tour()
-        #approx_cost, approx_solution, approx_trace = solver.generate(**kwargs)
+        approx_cost, approx_solution, approx_trace = approx.Approx(city, args.cutoff, seed).generate_tour()
+        rel_error = round(float(approx_cost - opt) / float(opt), 4)
+        
+        print("city_name: ", city_name)
+        print("rel error: ", rel_error)
+        print("approx_cost: ", approx_cost)
+        print("approx_solution: ", approx_solution)
 
         if 'output' not in os.listdir('./'):
             os.mkdir('./output')
-        #with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.trace', 'w') as f:
-        with open('output/'+ args.instance + "_Approx_" + str(args.cutoff) +'.trace', 'w') as f:
+        with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.trace', 'w') as f:
             for (a, b) in approx_trace:
                 f.write('{:.2f}, {}\n'.format(a, b))
-        #with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.sol', 'w') as f:
-        with open('output/'+ args.instance + "_Approx_" + str(args.cutoff) +'.sol', 'w') as f:
+        with open('output/'+ city_name + "_Approx_" + str(args.cutoff) +'.sol', 'w') as f:
             f.write('{}\n'.format(approx_cost))
             for vertex in approx_solution[:-1]:
                 f.write(str(vertex) + ',') 
@@ -145,10 +141,10 @@ def main():
         # final results form: [[1st],[2nd],[3rd]]. example[[[0, 3, 2, 1, 0], 200, 0.5], [[0, 2, 1, 3, 0], 150, 0.7]]
         final_results=solver.generate(**kwargs)
         
-        sol_file = './output/' + args.instance + "_LS1_" + str(args.cutoff) + "_" + str(args.seed) + ".sol"
-        trace_file = './output/' + args.instance + "_LS1_" + str(args.cutoff) + "_" + str(args.seed) + ".trace"
+        sol_file = './output/' + city_name + "_LS1_" + str(args.cutoff) + "_" + str(args.seed) + ".sol"
+        trace_file = './output/' + city_name + "_LS1_" + str(args.cutoff) + "_" + str(args.seed) + ".trace"
 
-            # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
+        # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
         f=open(sol_file, 'w')
         f.write('{}\n'.format(final_results[-1][1]))
         for edge in final_results[-1][0][:-1]:
@@ -156,13 +152,13 @@ def main():
         f.write(str(final_results[-1][0][-1]))
         f.close()
 
-            # Generating trace file
+        # Generating trace file
         f=open(trace_file, 'w')
         for entry in final_results:
             f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
         f.close()
 
-        error = round(abs(final_results[-1][1] - opt)/opt,4)
+        error = round(float(abs(final_results[-1][1] - opt))/float(opt), 4)
         end_time = final_results[-1][2]
         print('Relative error is ', error)
         print('Finished time is {:.2f}'.format(end_time))
@@ -172,8 +168,8 @@ def main():
         # final results form: [[1st],[2nd],[3rd]]. example[[[0, 3, 2, 1, 0], 200, 0.5], [[0, 2, 1, 3, 0], 150, 0.7]]
         final_results = solver.generate(**kwargs)
 
-        sol_file = './output/' + args.instance + "_LS2_" + str(args.cutoff) + "_" + str(args.seed) + ".sol"
-        trace_file = './output/' + args.instance + "_LS2_" + str(args.cutoff) + "_" + str(args.seed) + ".trace"
+        sol_file = './output/' + city_name + "_LS2_" + str(args.cutoff) + "_" + str(args.seed) + ".sol"
+        trace_file = './output/' + city_name + "_LS2_" + str(args.cutoff) + "_" + str(args.seed) + ".trace"
 
         # finalresults=list of (last_state.path, last_state.path_cost, time.time() - self.begin_time))
         f = open(sol_file, 'w')
@@ -189,7 +185,7 @@ def main():
             f.write('{:.2f}, {}\n'.format(entry[2], entry[1]))
         f.close()
 
-        error = round(abs(final_results[-1][1] - opt)/opt,4)
+        error = round(float(final_results[-1][1] - opt)/float(opt), 4)
         end_time = final_results[-1][2]
         print('Relative error is ', error)
         print('Finished time is {:.2f}'.format(end_time))
@@ -199,28 +195,7 @@ def main():
         solver.generate(**kwargs)
     
 
-    
-"""            
-    if final_results:
-        error = round(abs(final_results[-1][1] - opt)/opt,4)
-        end_time = final_results[-1][2]
-        print('Relative error is ', error)
-        print('Finished time is {:.2f}'.format(end_time))
-"""
-
-
 if __name__ == '__main__':
     main()
     
     
-
-        
-"""
-        elif algorithm == 'MSTApprox':
-            approx_1 = MSTApprox.MSTApprox(self.graph,instance,seed,cutoff)
-            approx_1.generate_tour()
-        elif algorithm == 'LS1':
-            ls_1 = Opt2Search.Opt2Search(self.graph,instance,seed,cutoff)
-            ls_1.generate_tour()
-
-"""

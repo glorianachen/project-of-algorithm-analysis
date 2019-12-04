@@ -8,29 +8,13 @@ import os
 
 
 class Approx:
-	def __init__(self, city, timelimit, seed, cityName):
+	def __init__(self, city, timelimit, seed):
 		# calculate euclidean distance, store in 2D adjacent matrix
 		rows, cols = (len(city), len(city)) 
 		G = [[0 for x in range(cols)] for y in range(rows)]  
 		for key_v, value_v in city.items():
 		    for key_u, value_u in city.items():
 		        G[key_v - 1][key_u - 1] = round(np.linalg.norm(np.array(value_v) - np.array(value_u)))
-
-		optimal_tour_lengths = {
-	        'SanFrancisco': 810196,
-	        'NYC': 1555060,
-	        'Roanoke': 655454,
-	        'Atlanta': 2003763,
-	        'Champaign': 52643,
-	        'Cincinnati': 277952,
-	        'Philadelphia': 1395981,
-	        'UKansasState': 62962,
-	        'Toronto': 1176151,
-	        'UMissouri': 132709,
-	        'Boston': 893536,
-	        'Denver': 100431,
-	        'Berlin': 7542
-    	}
 
 		self.G = G
 		time_limit = timelimit
@@ -71,13 +55,6 @@ class Approx:
 		self.cost = cost
 		self.solution = solution
 		self.trace = trace  
-		self.rel_error = (cost - optimal_tour_lengths[cityName]) / optimal_tour_lengths[cityName]
-
-		print("cityName:", cityName)
-		print("Final:", trace[-1])
-		print("cost:", cost)
-		print("rel_error:", self.rel_error)
-		print()
 
 	# compute MST using Prim
 	def prim(self, root_index):
@@ -141,4 +118,4 @@ class Approx:
 	    return H, H_Path, int(cost)
 
 	def generate_tour(self):
-		return self.cost, self.solution, self.trace, self.rel_error
+		return self.cost, self.solution, self.trace

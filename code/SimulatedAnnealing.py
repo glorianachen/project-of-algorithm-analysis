@@ -24,7 +24,7 @@ class SimulatedAnnealing:
     # parse input file to store graph in a dictionary
     # format is G{1:[x1, y1], 2:[x2, y2]...n:[xn,yn]}
     def getEdges(self):
-        file_path = './DATA/'+ str(self.city) + '.tsp'
+        file_path = self.city
         file = open(file_path, 'r')
 
         description = ''

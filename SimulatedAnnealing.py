@@ -112,7 +112,6 @@ class SimulatedAnnealing:
             if current_distance < best_distance:
                 best_distance = current_distance
                 best_route = current_route[:]
-                # output.write(str(time.time()-start_time) + "  ")
                 self.result.append((best_route, best_distance, (time.time()-start_time)))
                 avg_running_time += time.time()-pre_timestamp
                 pre_timestamp = time.time()
